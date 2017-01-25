@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<config>
+    <modules>
+        <Voga_AdminReports>
+            <active>true</active>
+            <codePool>local</codePool>
+        </Voga_AdminReports>
+    </modules>
+</config>

@@ -1,0 +1,45 @@
+<?xml version="1.0" ?>
+<config>
+    <modules>
+        <Voga_AdminReports>
+            <version>0.1.0</version>
+        </Voga_AdminReports>
+    </modules>
+    <global>
+        <models>
+            <voga_adminreports>
+                <class>Voga_AdminReports_Model</class>
+            </voga_adminreports>
+        </models>
+        <blocks>
+            <voga_adminreports>
+                <class>Voga_AdminReports_Block</class>
+            </voga_adminreports>
+        </blocks>
+        <helpers>
+            <voga_adminreports>
+                <class>Voga_AdminReports_Helper</class>
+            </voga_adminreports>
+        </helpers>
+    </global>
+    <admin>
+        <routers>
+            <adminhtml>
+                <args>
+                    <modules>
+                        <voga_adminreports before="Mage_Adminhtml">Voga_AdminReports_Adminhtml</voga_adminreports>
+                    </modules>
+                </args>
+            </adminhtml>
+        </routers>
+    </admin>
+    <adminhtml>
+        <layout>
+            <updates>
+                <voga_adminreports>
+                    <file>voga_adminreports.xml</file>
+                </voga_adminreports>
+            </updates>
+        </layout>
+    </adminhtml>
+</config>
