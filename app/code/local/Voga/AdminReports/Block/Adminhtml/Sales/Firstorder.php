@@ -1,20 +1,9 @@
 <?php
-class Voga_AdminReports_Block_Adminhtml_Sales_Firstorder extends Mage_Adminhtml_Block_Widget_Grid_Container
+
+class Voga_AdminReports_Block_Adminhtml_Sales_Firstorder extends Voga_AdminReports_Block_Adminhtml_Base_Report
 {
-    public function __construct()
-    {
-        $helper = Mage::helper('voga_adminreports');
-        $this->_blockGroup = 'voga_adminreports';
-        $this->_controller = 'adminhtml_sales_firstorder';
-        $this->_headerText = $helper->__('First Orders Report');
-        parent::__construct();
-        $this->setTemplate('report/grid/container.phtml');
-        $this->_removeButton('add');
-        $this->addButton('filter_form_submit', array(
-            'label' => $helper->__('Show Report'),
-            'onclick' => 'filterFormSubmit()'
-        ));
-    }
+    public $reportController = 'adminhtml_sales_firstorder';
+    public $reportHeaderText = 'First Orders Report';
 
     public function getFilterUrl()
     {
