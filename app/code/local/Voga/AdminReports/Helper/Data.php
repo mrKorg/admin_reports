@@ -32,8 +32,6 @@ class Voga_AdminReports_Helper_Data extends Mage_Core_Helper_Abstract
 
     protected function _getCategoriesCollection()
     {
-
-
         $collection = Mage::getModel('catalog/category')->getCollection();
 
         // Exclude categories 'sale' and 'new-in'

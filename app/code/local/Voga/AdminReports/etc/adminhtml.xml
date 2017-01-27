@@ -8,10 +8,10 @@
                         <children>
                             <salesroot>
                                 <children>
-                                    <voga_adminreports_sales_first_order module="voga_adminreports" translate="title">
-                                        <title>First Orders</title>
+                                    <voga_adminreports_sales_daily_sales module="voga_adminreports" translate="title">
+                                        <title>Daily Sales Report</title>
                                         <sort_order>100</sort_order>
-                                    </voga_adminreports_sales_first_order>
+                                    </voga_adminreports_sales_daily_sales>
                                     <voga_adminreports_sales_by_countries module="voga_adminreports" translate="title">
                                         <title>Sales By Countries</title>
                                         <sort_order>110</sort_order>
@@ -38,11 +38,11 @@
             <children>
                 <salesroot>
                     <children>
-                        <voga_adminreports_sales_first_order module="voga_adminreports" translate="title">
-                            <title>First Orders</title>
+                        <voga_adminreports_sales_daily_sales module="voga_adminreports" translate="title">
+                            <title>Daily Sales Report</title>
                             <sort_order>100</sort_order>
-                            <action>adminhtml/sales_firstorder/report</action>
-                        </voga_adminreports_sales_first_order>
+                            <action>adminhtml/sales_dailysales/report</action>
+                        </voga_adminreports_sales_daily_sales>
                         <voga_adminreports_sales_by_countries module="voga_adminreports" translate="title">
                             <title>Sales By Countries</title>
                             <sort_order>110</sort_order>

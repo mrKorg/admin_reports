@@ -9,7 +9,11 @@
         <models>
             <voga_adminreports>
                 <class>Voga_AdminReports_Model</class>
+                <resourceModel>voga_adminreports_resource</resourceModel>
             </voga_adminreports>
+            <voga_adminreports_resource>
+                <class>Voga_AdminReports_Model_Resource</class>
+            </voga_adminreports_resource>
         </models>
         <blocks>
             <voga_adminreports>

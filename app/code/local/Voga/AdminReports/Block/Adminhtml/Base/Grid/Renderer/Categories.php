@@ -12,7 +12,7 @@ class Voga_AdminReports_Block_Adminhtml_Base_Grid_Renderer_Categories extends Ma
         $productCategories = $product->getCategoryIds();
 
         foreach ($productCategories as $category) {
-            if ($categoriesTree[$category]) {
+            if (key_exists($category, $categoriesTree)) {
                 $_allProductCategories[] = $categoriesTree[$category];
             }
         }
