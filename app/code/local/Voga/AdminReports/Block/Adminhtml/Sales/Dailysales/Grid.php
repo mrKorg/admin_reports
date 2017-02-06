@@ -1,4 +1,5 @@
 <?php
+
 class Voga_AdminReports_Block_Adminhtml_Sales_Dailysales_Grid extends Voga_AdminReports_Block_Adminhtml_Base_Grid_Grid
 {
     protected function _getGridCollection($filterData)
@@ -26,7 +27,7 @@ class Voga_AdminReports_Block_Adminhtml_Sales_Dailysales_Grid extends Voga_Admin
 
         $collection
             ->getSelect()
-            ->columns('date(main_table.created_at) AS date')
+            ->columns('main_table.created_at AS date')
             ->join(
                 array('address'         => 'sales_flat_order_address'),
                 'address.parent_id = main_table.entity_id AND address.address_type=\'billing\'',
@@ -47,7 +48,6 @@ class Voga_AdminReports_Block_Adminhtml_Sales_Dailysales_Grid extends Voga_Admin
                     )
                 )
             ;
-
         Mage::log((string)$collection->getSelect());
 
         return $collection;
@@ -63,8 +63,6 @@ class Voga_AdminReports_Block_Adminhtml_Sales_Dailysales_Grid extends Voga_Admin
             'width'           => 100,
             'filter'          => false,
             'sortable'        => false,
-            'period_type'     => $this->getPeriodType(),
-            'renderer'        => 'adminhtml/report_sales_grid_column_renderer_date',
             'html_decorators' => array('nobr'),
         ));
 
@@ -82,7 +80,7 @@ class Voga_AdminReports_Block_Adminhtml_Sales_Dailysales_Grid extends Voga_Admin
             'width'           => 100,
             'filter'          => false,
             'sortable'        => false,
-            'renderer'        => 'voga_adminreports/adminhtml_base_grid_renderer_status',
+            'renderer'        => 'voga_adminreports/adminhtml_sales_dailysales_renderer_status',
         ));
 
         $this->addColumn('country_id', array(
@@ -90,7 +88,7 @@ class Voga_AdminReports_Block_Adminhtml_Sales_Dailysales_Grid extends Voga_Admin
             'index'           => 'country_id',
             'filter'          => false,
             'sortable'        => false,
-            'renderer'        => 'voga_adminreports/adminhtml_base_grid_renderer_country',
+            'renderer'        => 'voga_adminreports/adminhtml_sales_dailysales_renderer_country',
         ));
 
         $this->addColumn('city', array(
@@ -125,7 +123,8 @@ class Voga_AdminReports_Block_Adminhtml_Sales_Dailysales_Grid extends Voga_Admin
             'width'           => 100,
             'filter'          => false,
             'sortable'        => false,
-            'type'            => 'number'
+            'type'            => 'currency',
+            'currency_code'   => Mage::app()->getStore()->getBaseCurrencyCode()
         ));
 
         $this->addColumn('base_shipping_amount', array(
@@ -134,7 +133,8 @@ class Voga_AdminReports_Block_Adminhtml_Sales_Dailysales_Grid extends Voga_Admin
             'width'           => 100,
             'filter'          => false,
             'sortable'        => false,
-            'type'            => 'number'
+            'type'            => 'currency',
+            'currency_code'   => Mage::app()->getStore()->getBaseCurrencyCode()
         ));
 
         $this->addColumn('store_id', array(
@@ -143,7 +143,7 @@ class Voga_AdminReports_Block_Adminhtml_Sales_Dailysales_Grid extends Voga_Admin
             'width'           => 100,
             'filter'          => false,
             'sortable'        => false,
-            'renderer'        => 'voga_adminreports/adminhtml_base_grid_renderer_language',
+            'renderer'        => 'voga_adminreports/adminhtml_sales_dailysales_renderer_language',
         ));
 
         $this->addColumn('first_order', array(

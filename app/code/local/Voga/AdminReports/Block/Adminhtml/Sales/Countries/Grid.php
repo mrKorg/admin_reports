@@ -44,8 +44,6 @@ class Voga_AdminReports_Block_Adminhtml_Sales_Countries_Grid extends Voga_AdminR
             'width' => 100,
             'filter' => false,
             'sortable' => false,
-            'period_type' => $this->getPeriodType(),
-            'renderer' => 'adminhtml/report_sales_grid_column_renderer_date',
             'html_decorators' => array('nobr'),
         ));
         $this->addColumn('country_id', array(
@@ -53,7 +51,7 @@ class Voga_AdminReports_Block_Adminhtml_Sales_Countries_Grid extends Voga_AdminR
             'index' => 'country_id',
             'filter' => false,
             'sortable' => false,
-            'renderer' => 'voga_adminreports/adminhtml_base_grid_renderer_country',
+            'renderer' => 'voga_adminreports/adminhtml_sales_countries_renderer_country',
         ));
 
         $this->addColumn('country_base_grand_total', array(

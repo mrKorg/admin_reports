@@ -2,8 +2,8 @@
 
 class Voga_AdminReports_Block_Adminhtml_Sales_Firstorder extends Voga_AdminReports_Block_Adminhtml_Base_Report
 {
-    public $reportController = 'adminhtml_sales_firstorder';
-    public $reportHeaderText = 'First Orders Report';
+    protected $_controller = 'adminhtml_sales_firstorder';
+    protected $_reportHeaderText = 'First Orders Report';
 
     public function getFilterUrl()
     {

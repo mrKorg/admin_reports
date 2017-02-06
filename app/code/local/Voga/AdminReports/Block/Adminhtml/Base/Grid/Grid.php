@@ -1,6 +1,9 @@
 <?php
-class Voga_AdminReports_Block_Adminhtml_Base_Grid_Grid extends Mage_Adminhtml_Block_Widget_Grid
+
+abstract class Voga_AdminReports_Block_Adminhtml_Base_Grid_Grid extends Mage_Adminhtml_Block_Widget_Grid
 {
+    abstract protected function _getGridCollection($filterData);
+
     protected function _prepareCollection()
     {
         $filterData = $this->getFilterData();

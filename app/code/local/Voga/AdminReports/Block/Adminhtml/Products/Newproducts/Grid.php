@@ -9,11 +9,21 @@ class Voga_AdminReports_Block_Adminhtml_Products_Newproducts_Grid extends Voga_A
             ->addAttributeToFilter('type_id', 'simple')
             ->addFieldToFilter('created_at', array('gteq' => $filterData->getData('from')))
             ->addFieldToFilter('created_at', array('lteq' => $filterData->getData('to')))
-            ->addAttributeToSelect(array('entity_id', 'sku', 'configurable_sku', 'name', 'price', 'color', 'size', 'designer'))
+            ->addAttributeToSelect(array('entity_id', 'sku', 'color', 'size', 'designer'))
             ;
+
+        $collection->joinAttribute(
+            'price',
+            'catalog_product/price',
+            'entity_id',
+            null,
+            'left',
+            Mage::app()->getStore()->getId()
+        );
 
         $genderId = Mage::getModel('eav/config')->getAttribute('catalog_product', 'gender')->getId();
         $productTypeId = Mage::getModel('eav/config')->getAttribute('catalog_product', 'product_type')->getId();
+        $nameId = Mage::getModel('eav/config')->getAttribute('catalog_product', 'name')->getId();
 
         $collection
             ->getSelect()
@@ -31,6 +41,13 @@ class Voga_AdminReports_Block_Adminhtml_Products_Newproducts_Grid extends Voga_A
                 )
             )
             ->join(
+                array('entity' => $collection->getTable('catalog_product_entity_varchar')),
+                "entity.entity_id = link.parent_id AND entity.attribute_id = {$nameId}",
+                array(
+                    'configurable_name'   => 'value'
+                )
+            )
+            ->join(
                 array('stock' => $collection->getTable('cataloginventory_stock_item')),
                 'stock.product_id = e.entity_id',
                 array('qty' => 'stock.qty')
@@ -38,17 +55,51 @@ class Voga_AdminReports_Block_Adminhtml_Products_Newproducts_Grid extends Voga_A
             ->joinLeft(
                 array('at_type' => $collection->getTable('catalog_product_entity_int')),
                 "at_type.entity_id = configurable.entity_id AND at_type.attribute_id = {$productTypeId}",
-                array('type_id' => 'at_type.entity_id', 'product_type' => 'at_type.value')
+                array('product_type' => 'at_type.value')
             )
             ->joinLeft(
                 array('at_gender' => $collection->getTable('catalog_product_entity_varchar')),
                 "at_gender.entity_id = configurable.entity_id AND at_gender.attribute_id = {$genderId}",
-                array('gender_id' => 'at_gender.entity_id', 'gender' => 'at_gender.value')
+                array('gender' => 'at_gender.value')
             )
         ;
-        Mage::log((string)$collection->getSelect());
 
         return $collection;
+    }
+
+    protected function _afterLoadCollection()
+    {
+        $configurableProductsIds = implode(',', $this->getConfigurableIds($this->getCollection()));
+
+        $connection  = Mage::getSingleton('core/resource')->getConnection('core_read');
+        $sql         = "SELECT category_id, product_id FROM `catalog_category_product` WHERE `product_id` in ({$configurableProductsIds})";
+        $rows        = $connection->fetchAll($sql);
+
+        $productCategoriesIds = array();
+        foreach ($rows as $row) {
+            $productCategoriesIds[$row['product_id']][] = $row['category_id'];
+        }
+
+        foreach ($this->getCollection() as $item) {
+            if (array_key_exists($item->getConfigurableId(), $productCategoriesIds)) {
+                $item->setProductCategoriesIds( $productCategoriesIds[$item->getConfigurableId()] );
+            }
+        }
+
+        return $this;
+    }
+
+    public function getConfigurableIds($collection)
+    {
+        $idsSelect = clone $collection->getSelect();
+        $idsSelect->reset(Zend_Db_Select::COLUMNS);
+
+        $idsSelect
+            ->columns('entity_id', 'configurable')
+            ->distinct(true)
+        ;
+
+        return $collection->getConnection()->fetchCol($idsSelect);
     }
 
     protected function _prepareColumns()
@@ -76,12 +127,12 @@ class Voga_AdminReports_Block_Adminhtml_Products_Newproducts_Grid extends Voga_A
             'width'           => 10,
             'filter'          => false,
             'sortable'        => false,
-            'renderer'        => 'Voga_AdminReports_Block_Adminhtml_Base_Grid_Renderer_Qty',
+            'renderer'        => 'voga_adminreports/adminhtml_products_newproducts_renderer_qty',
         ));
 
-        $this->addColumn('name', array(
+        $this->addColumn('configurable_name', array(
             'header'          => $helper->__('Name'),
-            'index'           => 'name',
+            'index'           => 'configurable_name',
             'width'           => 100,
             'filter'          => false,
             'sortable'        => false,
@@ -93,7 +144,7 @@ class Voga_AdminReports_Block_Adminhtml_Products_Newproducts_Grid extends Voga_A
             'width'           => 30,
             'filter'          => false,
             'sortable'        => false,
-            'renderer'        => 'Voga_AdminReports_Block_Adminhtml_Base_Grid_Renderer_Gender',
+            'renderer'        => 'voga_adminreports/adminhtml_products_newproducts_renderer_gender',
         ));
 
         $this->addColumn('designer', array(
@@ -102,7 +153,7 @@ class Voga_AdminReports_Block_Adminhtml_Products_Newproducts_Grid extends Voga_A
             'width'           => 100,
             'filter'          => false,
             'sortable'        => false,
-            'renderer'        => 'Voga_AdminReports_Block_Adminhtml_Base_Grid_Renderer_Brand',
+            'renderer'        => 'voga_adminreports/adminhtml_products_newproducts_renderer_brand',
         ));
 
         $this->addColumn('product_type', array(
@@ -111,7 +162,7 @@ class Voga_AdminReports_Block_Adminhtml_Products_Newproducts_Grid extends Voga_A
             'width'           => 100,
             'filter'          => false,
             'sortable'        => false,
-            'renderer'        => 'Voga_AdminReports_Block_Adminhtml_Base_Grid_Renderer_Type',
+            'renderer'        => 'voga_adminreports/adminhtml_products_newproducts_renderer_type',
         ));
 
         $this->addColumn('color', array(
@@ -120,7 +171,7 @@ class Voga_AdminReports_Block_Adminhtml_Products_Newproducts_Grid extends Voga_A
             'width'           => 50,
             'filter'          => false,
             'sortable'        => false,
-            'renderer'        => 'Voga_AdminReports_Block_Adminhtml_Base_Grid_Renderer_Color',
+            'renderer'        => 'voga_adminreports/adminhtml_products_newproducts_renderer_color',
         ));
 
         $this->addColumn('size', array(
@@ -129,7 +180,7 @@ class Voga_AdminReports_Block_Adminhtml_Products_Newproducts_Grid extends Voga_A
             'width'           => 100,
             'filter'          => false,
             'sortable'        => false,
-            'renderer'        => 'Voga_AdminReports_Block_Adminhtml_Base_Grid_Renderer_Size',
+            'renderer'        => 'voga_adminreports/adminhtml_products_newproducts_renderer_size',
         ));
 
         $this->addColumn('price', array(
@@ -148,18 +199,16 @@ class Voga_AdminReports_Block_Adminhtml_Products_Newproducts_Grid extends Voga_A
             'width'           => 100,
             'filter'          => false,
             'sortable'        => false,
-            'period_type'     => $this->getPeriodType(),
-            'renderer'        => 'adminhtml/report_sales_grid_column_renderer_date',
             'html_decorators' => array('nobr'),
         ));
 
-        $this->addColumn('configurable_id', array(
+        $this->addColumn('product_categories_ids', array(
             'header'          => $helper->__('Categories'),
-            'index'           => 'configurable_id',
+            'index'           => 'product_categories_ids',
             'width'           => 200,
             'filter'          => false,
             'sortable'        => false,
-            'renderer'        => 'Voga_AdminReports_Block_Adminhtml_Base_Grid_Renderer_Categories',
+            'renderer'        => 'voga_adminreports/adminhtml_products_newproducts_renderer_categories',
         ));
 
         $this->addExportType('*/*/exportReportCsv', $helper->__('CSV'));

@@ -1,6 +1,11 @@
 <?php
 class Voga_AdminReports_Adminhtml_Sales_FirstorderController extends Mage_Adminhtml_Controller_Report_Abstract
 {
+    public function _isAllowed()
+    {
+        return Mage::getSingleton('admin/session')->isAllowed('report/salesroot/voga_adminreports_sales_first_order');
+    }
+
     public function reportAction()
     {
         $this->_title($this->__('Reports'))->_title($this->__('Sales'))->_title($this->__('First Order'));

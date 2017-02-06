@@ -1,15 +1,14 @@
 <?php
 class Voga_AdminReports_Block_Adminhtml_Base_Report extends Mage_Adminhtml_Block_Widget_Grid_Container
 {
-    public $reportController = '';
-    public $reportHeaderText = '';
+    protected $_controller = '';
+    protected $_reportHeaderText = '';
 
     public function __construct()
     {
         $helper = Mage::helper('voga_adminreports');
         $this->_blockGroup = 'voga_adminreports';
-        $this->_controller = $this->reportController;
-        $this->_headerText = $helper->__($this->reportHeaderText);
+        $this->_headerText = $helper->__($this->_reportHeaderText);
         parent::__construct();
         $this->setTemplate('report/grid/container.phtml');
         $this->_removeButton('add');

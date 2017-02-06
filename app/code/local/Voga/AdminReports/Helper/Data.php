@@ -1,21 +1,22 @@
 <?php
 class Voga_AdminReports_Helper_Data extends Mage_Core_Helper_Abstract
 {
-    protected $_categories = array();
+    protected $_categories = null;
 
-    public function getProductAttributeByCode($code)
+    public function getProductAttributeOptionsByCode($code)
     {
-        $attributes = array();
+        $attributesOptions = array();
         $attribute = Mage::getModel('eav/config')->getAttribute('catalog_product', $code);
-        foreach ($attribute->getSource()->getAllOptions(true, true) as $instance) {
-            $attributes[$instance['value']] = $instance['label'];
+        foreach ($attribute->getSource()->getAllOptions(true, true) as $option) {
+            $attributesOptions[$option['value']] = $option['label'];
         }
-        return $attributes;
+        return $attributesOptions;
     }
 
     public function getCategoriesTree()
     {
-        if (!count($this->_categories)) {
+        if (is_null($this->_categories)) {
+            $this->_categories = array();
             $collection = $this->_getCategoriesCollection();
             foreach ($collection as $item) {
                 if ($item['level'] == 2) {
@@ -36,35 +37,20 @@ class Voga_AdminReports_Helper_Data extends Mage_Core_Helper_Abstract
 
         // Exclude categories 'sale' and 'new-in'
         $excludedCategories = Mage::getModel('catalog/category')->getCollection()
-            ->addAttributeToSelect (array('name', 'entity_id'))
-            ->addAttributeToFilter ('url_key', array('sale', 'new-in'))
+            ->addAttributeToSelect(array('name', 'entity_id'))
+            ->addAttributeToFilter('url_key', array('sale', 'new-in'))
         ;
-        $expelledCategoriesIds = array();
-        foreach ($excludedCategories as $category) {
-            $expelledCategoriesIds[] = $category->getEntityId();
-        }
-        $expelledCategoriesIds = implode(',',$expelledCategoriesIds);
+        $expelledCategoriesIds = implode(',', $excludedCategories->getAllIds());
 
         $collection
-            ->addAttributeToSelect(array('entity_id', 'parent_id', 'level', 'name', 'price', 'color', 'size', 'designer'))
-        ;
-        $collection
+            ->addAttributeToSelect(array('parent_id', 'level', 'name', 'is_active'))
+            ->addAttributeToFilter('level', array('gteq' => 2))
+            ->addAttributeToFilter('entity_id', array('nin' => $expelledCategoriesIds))
+            ->addAttributeToFilter('is_active', 1)
             ->getSelect()
-            ->join(
-                array('name' => 'catalog_category_entity_varchar'),
-                'name.entity_id = e.entity_id and name.attribute_id = 41 and name.store_id = 0',
-                array('value'=>'name.value')
-            )
-            ->join(
-                array('enabled' => 'catalog_category_entity_int'),
-                'enabled.entity_id = e.entity_id and enabled.attribute_id = 42 and name.store_id = 0',
-                array('value'=>'name.value')
-            )
-            ->where(
-                "e.level >= 2 and e.entity_id not in ({$expelledCategoriesIds}) and enabled.value = 1"
-            )
             ->order('level','DESC')
         ;
+
         return $collection;
     }
 }

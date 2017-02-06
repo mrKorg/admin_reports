@@ -1,6 +1,11 @@
 <?php
 class Voga_AdminReports_Adminhtml_Products_NewproductsController extends Mage_Adminhtml_Controller_Report_Abstract
 {
+    public function _isAllowed()
+    {
+        return Mage::getSingleton('admin/session')->isAllowed('report/products/voga_adminreports_sales_new_products');
+    }
+
     public function reportAction()
     {
         $this->_title($this->__('Reports'))->_title($this->__('Products'))->_title($this->__('New Products'));
